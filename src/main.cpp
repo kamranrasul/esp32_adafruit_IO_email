@@ -30,9 +30,8 @@
 // To send Email using Gmail use port 465 (SSL) and SMTP Server smtp.gmail.com
 #define emailSenderAccount "YOUR SENDER EMAIL"
 #define emailSenderPassword "YOUR PASS"
-// #define smtpServer "smtp.gmail.com"
-// #define smtpServerPort 465
 
+// email sender initializer
 EMailSender emailSend(emailSenderAccount, emailSenderPassword);
 
 // fuctions for operation
