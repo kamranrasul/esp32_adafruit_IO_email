@@ -24,12 +24,12 @@
 #define WIFI_SSID "YOUR SSID"
 #define WIFI_PASS "YOUR PASS"
 
-#define IO_USERNAME "YOUR IO ID"
-#define IO_KEY "YOUR ID KEY"
+#define IO_USERNAME "YOUR IO USERNAME"
+#define IO_KEY "YOUR IO KEY"
 
 // To send Email using Gmail use port 465 (SSL) and SMTP Server smtp.gmail.com
-#define emailSenderAccount "YOUR SENDER EMAIL"
-#define emailSenderPassword "YOUR PASS"
+#define emailSenderAccount "YOUR SEND EMAIL"
+#define emailSenderPassword "YOUR SENDER EMAIL PASS"
 
 // email sender initializer
 EMailSender emailSend(emailSenderAccount, emailSenderPassword);
@@ -82,9 +82,12 @@ struct tm timeinfo;
 // test pins and initialize them to 0
 int testPin[4] = {0, 0, 0, 0};
 
+// enabling email server once the update recieves
+bool firstTime = true;
+
 // scheduled tasks
 Task sendIOUpdate(30000, TASK_FOREVER, &updateIO);
-Task emailSender(86400000, TASK_FOREVER, &sendEmail);
+Task emailSender(600000, TASK_FOREVER, &sendEmail);
 
 // Create the scheduler
 Scheduler runner;
@@ -110,6 +113,11 @@ void loop()
   if (Serial2.available())
   {
     rcvSerial();
+    if (firstTime)
+    {
+      emailSender.enable();
+      firstTime = false;
+    }
   }
 
   if (detectedChange())
@@ -150,7 +158,6 @@ void taskInitilizer()
 
   // enable the task
   sendIOUpdate.enable();
-  emailSender.enable();
 }
 
 // time function
@@ -185,13 +192,13 @@ void sendEmail()
                     String(timeinfo.tm_min);
 
   message.message = String("Temperature: ") + String(rcdStruct.temperature) + String(" °C") +
-                    String("Humidity:    ") + String(rcdStruct.humidity) + String(" %") +
-                    String("Pressure:    ") + String(rcdStruct.pressure) + String(" hPa") +
-                    String("Altitude:    ") + String(rcdStruct.altitude) + String(" m") +
-                    String("Furnace:     ") + String(rcdStruct.pinStatus[0] ? "ON" : "OFF") +
-                    String("Exhaust:     ") + String(rcdStruct.pinStatus[1] ? "ON" : "OFF") +
-                    String("Humidifier:  ") + String(rcdStruct.pinStatus[2] ? "ON" : "OFF") +
-                    String("Light:       ") + String(rcdStruct.pinStatus[3] ? "ON" : "OFF");
+                    String(" Humidity:    ") + String(rcdStruct.humidity) + String(" %") +
+                    String(" Pressure:    ") + String(rcdStruct.pressure) + String(" hPa") +
+                    String(" Altitude:    ") + String(rcdStruct.altitude) + String(" m") +
+                    String(" Furnace:     ") + String(rcdStruct.pinStatus[0] ? "ON" : "OFF") +
+                    String(" Exhaust:     ") + String(rcdStruct.pinStatus[1] ? "ON" : "OFF") +
+                    String(" Humidifier:  ") + String(rcdStruct.pinStatus[2] ? "ON" : "OFF") +
+                    String(" Light:       ") + String(rcdStruct.pinStatus[3] ? "ON" : "OFF");
 
   EMailSender::Response resp;
 
