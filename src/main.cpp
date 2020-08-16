@@ -10,7 +10,7 @@
 *********/
 
 #include <Arduino.h>          // base arduino library
-#include <EMailSender.h>      // for sending email
+#include "ESP32_MailClient.h"
 #include "time.h"             // for time setup
 #include "AdafruitIO_WiFi.h"  // for connecting WiFi
 #include "AdafruitIO_Feed.h"  // for connecting adafruit IO server
@@ -19,8 +19,26 @@
 // for updates between the webserver and central esp32
 #define RXD2 16
 #define TXD2 17
-// email sender initializer
-EMailSender emailSend(emailSenderAccount, emailSenderPassword);
+
+// Local WiFi Credentials
+#define WIFI_SSID    "YOUR SSID"
+#define WIFI_PASS    "YOUR PASS"
+
+#define IO_USERNAME  "YOUR IO ID"
+#define IO_KEY       "YOUR IO KEY"
+
+// To send Email using Gmail use port 465 (SSL) and SMTP Server smtp.gmail.com
+#define emailSenderAccount    "SENDER EMAIL"
+#define emailSenderPassword   "SENDER EMAIL PASS"
+#define emailRecipient        "RECIPIENT EMAIL"
+#define smtpServer            "smtp.gmail.com"
+#define smtpServerPort        465
+
+//The Email Sending data object contains config and data to send
+SMTPData smtpData;
+
+//Callback function to get the Email sending status
+void sendCallback(SendStatus info);
 
 // fuctions for operation
 void taskInitilizer();
@@ -96,10 +114,7 @@ Task emailSender(600000, TASK_FOREVER, &sendEmail);
 
 // Create the scheduler
 Scheduler runner;
-/*
-// The Email Sending data object contains config and data to send
-SMTPData smtpData;
-*/
+
 void setup()
 {
   taskInitilizer();
@@ -189,36 +204,28 @@ void sendEmail()
   Serial.println("Preparing to send email");
   Serial.println();
 
-  // Sending email here
-  EMailSender::EMailMessage message;
-  getLocalTime(&timeinfo);
-
   // setting up subject according to current date and time
-  message.subject = "ESP32 HA Update on " +
-                    String(timeinfo.tm_year + 1900) + "-" +
-                    String(timeinfo.tm_mon + 1) + "-" +
-                    String(timeinfo.tm_mday) + " at " +
-                    String(timeinfo.tm_hour) + ":" +
-                    String(timeinfo.tm_min);
+  String emailSubject = "ESP32 HA Update on "
+                      + String(timeinfo.tm_year + 1900) + "-"
+                      + String(timeinfo.tm_mon + 1) + "-"
+                      + String(timeinfo.tm_mday) + " at "
+                      + String(timeinfo.tm_hour) + ":"
+                      + String(timeinfo.tm_min)  + " hours";
 
-  message.message = String("Temperature: ") + String(rcdStruct.temperature) + String(" °C") +
-                    String(" Humidity:    ") + String(rcdStruct.humidity) + String(" %") +
-                    String(" Pressure:    ") + String(rcdStruct.pressure) + String(" hPa") +
-                    String(" Altitude:    ") + String(rcdStruct.altitude) + String(" m") +
-                    String(" Furnace:     ") + String(rcdStruct.pinStatus[0] ? "ON" : "OFF") +
-                    String(" Exhaust:     ") + String(rcdStruct.pinStatus[1] ? "ON" : "OFF") +
-                    String(" Humidifier:  ") + String(rcdStruct.pinStatus[2] ? "ON" : "OFF") +
-                    String(" Light:       ") + String(rcdStruct.pinStatus[3] ? "ON" : "OFF");
-
-  EMailSender::Response resp;
-
-  resp = emailSend.send("kamran.rasul@gmail.com", message);
-
-  Serial.printf("Sending status: %s", resp.status ? "Success" : "Failure");
-  Serial.println();
-
-/*
-  Serial.println("Sending email...");
+  String emailMessage = "*** Controller Pin State ***"
+                        + String("\nFurnace: ")       + (rcdStruct.pinStatus[0] ? "ON" : "OFF")
+                        + String("\nExhaust: ")       + (rcdStruct.pinStatus[1] ? "ON" : "OFF")
+                        + String("\nHumidifier: ")    + (rcdStruct.pinStatus[2] ? "ON" : "OFF")
+                        + String("\nLight: ")         + (rcdStruct.pinStatus[3] ? "ON" : "OFF")
+                        + String("\n\n*** Values from BME280 ***")
+                        + String("\nTemperature: ")   + String(rcdStruct.temperature)  + " °C"
+                        + String("\nHumidity: ")      + String(rcdStruct.humidity)     + " %"
+                        + String("\nPressure: ")      + String(rcdStruct.pressure)     + " hPa"
+                        + String("\nAltitude: ")      + String(rcdStruct.altitude)     + " m"
+                        + String("\n\n*** Values from MPU6050 ***")
+                        + String("\nTemperature: ")   + String(rcdStruct.temp6050)     + " °C"
+                        + String("\nAccelration X: ") + String(rcdStruct.A_values[0])  + ", Y: " + String(rcdStruct.A_values[1]) + ", Z: " + String(rcdStruct.A_values[2])
+                        + String("\nRotation X: ")    + String(rcdStruct.G_values[0])  + ", Y: " + String(rcdStruct.G_values[1]) + ", Z: " + String(rcdStruct.G_values[2]);
 
   // Set the SMTP Server Email host, port, account and password
   smtpData.setLogin(smtpServer, smtpServerPort, emailSenderAccount, emailSenderPassword);
@@ -233,7 +240,7 @@ void sendEmail()
   smtpData.setSubject(emailSubject);
 
   // Set the message with HTML format
-  smtpData.setMessage("This is a test message\nThis is the second line\nThis is the third line", false);
+  smtpData.setMessage(emailMessage, false);
 
   // Add recipients, you can add more than one recipient
   smtpData.addRecipient(emailRecipient);
@@ -245,7 +252,7 @@ void sendEmail()
     Serial.println("Error sending Email, " + MailClient.smtpErrorReason());
 
   //Clear all data from Email object to free memory
-  smtpData.empty();*/
+  smtpData.empty();
 }
 
 // for receiving data from Serial port
@@ -318,7 +325,6 @@ bool detectedChange()
   return false;
 }
 
-/*
 // Callback function to get the Email sending status
 void sendCallback(SendStatus msg)
 {
@@ -330,7 +336,7 @@ void sendCallback(SendStatus msg)
   {
     Serial.println("----------------");
   }
-}*/
+}
 
 // update the IO Server
 void updateIO()
