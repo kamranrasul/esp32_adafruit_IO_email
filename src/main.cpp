@@ -10,7 +10,7 @@
 *********/
 
 #include <Arduino.h>          // base arduino library
-#include "ESP32_MailClient.h"
+#include "ESP32_MailClient.h" // for email
 #include "time.h"             // for time setup
 #include "AdafruitIO_WiFi.h"  // for connecting WiFi
 #include "AdafruitIO_Feed.h"  // for connecting adafruit IO server
