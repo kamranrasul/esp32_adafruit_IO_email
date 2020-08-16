@@ -20,6 +20,10 @@
 #define RXD2 16
 #define TXD2 17
 
+// Task Scheduler timings
+#define EMAIL_TIMER     900000
+#define IO_UPDATE_TIMER 90000
+
 // Local WiFi Credentials
 #define WIFI_SSID    "YOUR SSID"
 #define WIFI_PASS    "YOUR PASS"
@@ -28,8 +32,8 @@
 #define IO_KEY       "YOUR IO KEY"
 
 // To send Email using Gmail use port 465 (SSL) and SMTP Server smtp.gmail.com
-#define emailSenderAccount    "SENDER EMAIL"
-#define emailSenderPassword   "SENDER EMAIL PASS"
+#define emailSenderAccount    "SENDER GOOGLE EMAIL"
+#define emailSenderPassword   "SENDER GOOGLE PASS"
 #define emailRecipient        "RECIPIENT EMAIL"
 #define smtpServer            "smtp.gmail.com"
 #define smtpServerPort        465
@@ -48,9 +52,6 @@ void sendEmail();
 void rcvSerial();
 bool detectedChange();
 void updateIO();
-
-// Callback function to get the Email sending status
-//void sendCallback(SendStatus info);
 
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
@@ -109,8 +110,8 @@ int testPin[4] = {0, 0, 0, 0};
 bool firstTime = true;
 
 // scheduled tasks
-Task sendIOUpdate(60000, TASK_FOREVER, &updateIO);
-Task emailSender(600000, TASK_FOREVER, &sendEmail);
+Task sendIOUpdate(IO_UPDATE_TIMER, TASK_FOREVER, &updateIO);
+Task emailSender(EMAIL_TIMER, TASK_FOREVER, &sendEmail);
 
 // Create the scheduler
 Scheduler runner;
