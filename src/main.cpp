@@ -94,10 +94,10 @@ AdafruitIO_Feed *altitudeFeed    = io.feed("sensorBME280.altitude");
 // MPU6040 Sensor feeds
 AdafruitIO_Feed *temp   = io.feed("sensorMPU6050.temp");
 AdafruitIO_Feed *acx    = io.feed("sensorMPU6050.acx");
-//AdafruitIO_Feed *acy    = io.feed("sensorMPU6050.acy");
+//AdafruitIO_Feed *acy  = io.feed("sensorMPU6050.acy");
 //AdafruitIO_Feed *acz  = io.feed("sensor_MPU6050.acz");
 AdafruitIO_Feed *gyx    = io.feed("sensorMPU6050.gyx");
-//AdafruitIO_Feed *gyy    = io.feed("sensorMPU6050.gyy");
+//AdafruitIO_Feed *gyy  = io.feed("sensorMPU6050.gyy");
 //AdafruitIO_Feed *gyz  = io.feed("sensor_MPU6050.gyz");
 
 // time variable setup
@@ -177,6 +177,7 @@ void connectIO()
     Serial.print(".");
     delay(500);
   }
+  
   Serial.println(" CONNECTED");
 }
 
