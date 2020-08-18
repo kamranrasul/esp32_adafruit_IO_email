@@ -86,19 +86,19 @@ AdafruitIO_Feed *pin26Feed = io.feed("controller.pin26");
 AdafruitIO_Feed *pin27Feed = io.feed("controller.pin27");
 
 // BME Sensor feeds
-AdafruitIO_Feed *temperatureFeed = io.feed("sensorBME280.temperature");
-AdafruitIO_Feed *humidityFeed    = io.feed("sensorBME280.humidity");
-AdafruitIO_Feed *barpressureFeed = io.feed("sensorBME280.barpressure");
-AdafruitIO_Feed *altitudeFeed    = io.feed("sensorBME280.altitude");
+AdafruitIO_Feed *temperatureFeed = io.feed("chipBME280.temperature");
+AdafruitIO_Feed *humidityFeed    = io.feed("chipBME280.humidity");
+AdafruitIO_Feed *barpressureFeed = io.feed("chipBME280.barpressure");
+AdafruitIO_Feed *altitudeFeed    = io.feed("chipBME280.altitude");
 
 // MPU6040 Sensor feeds
-AdafruitIO_Feed *temp   = io.feed("sensorMPU6050.temp");
-AdafruitIO_Feed *acx    = io.feed("sensorMPU6050.acx");
-//AdafruitIO_Feed *acy  = io.feed("sensorMPU6050.acy");
-//AdafruitIO_Feed *acz  = io.feed("sensor_MPU6050.acz");
-AdafruitIO_Feed *gyx    = io.feed("sensorMPU6050.gyx");
-//AdafruitIO_Feed *gyy  = io.feed("sensorMPU6050.gyy");
-//AdafruitIO_Feed *gyz  = io.feed("sensor_MPU6050.gyz");
+AdafruitIO_Feed *temp   = io.feed("chipMPU6050.temp");
+AdafruitIO_Feed *acx    = io.feed("chipMPU6050.acx");
+//AdafruitIO_Feed *acy  = io.feed("chipMPU6050.acy");
+//AdafruitIO_Feed *acz  = io.feed("chipMPU6050.acz");
+AdafruitIO_Feed *gyx    = io.feed("chipMPU6050.gyx");
+//AdafruitIO_Feed *gyy  = io.feed("chipMPU6050.gyy");
+//AdafruitIO_Feed *gyz  = io.feed("chipMPU6050.gyz");
 
 // time variable setup
 const char *ntpServer = "pool.ntp.org";
